@@ -16,7 +16,7 @@ const Header: React.FC = () => {
         <div className="w-10 h-10 bg-water/10 rounded-full flex items-center justify-center mr-3">
           <Droplet className="h-6 w-6 text-water" />
         </div>
-        <h1 className="text-xl font-semibold">Hydration Harmony</h1>
+        <h1 className="text-xl font-semibold">Hydration Buddy</h1>
       </div>
       
       <div className="flex items-center gap-4">
