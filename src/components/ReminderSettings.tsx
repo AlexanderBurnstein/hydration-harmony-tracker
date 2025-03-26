@@ -1,6 +1,7 @@
+
 import React, { useState } from 'react';
 import { useHydration } from '@/context/HydrationContext';
-import { useToast } from '@/components/ui/toast';
+import { useToast } from '@/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
@@ -14,13 +15,24 @@ interface Reminder {
 }
 
 const ReminderSettings: React.FC = () => {
-  const { setNotificationTimes } = useHydration();
+  const { reminderTimes, setReminderTimes } = useHydration();
   const { toast } = useToast();
-  const [reminders, setReminders] = useState<Reminder[]>([
-    { id: '1', time: '09:00', repeat: true },
-    { id: '2', time: '12:00', repeat: true },
-    { id: '3', time: '15:00', repeat: true },
-  ]);
+  const [reminders, setReminders] = useState<Reminder[]>(() => {
+    // Initialize from context or use defaults
+    if (reminderTimes && reminderTimes.length > 0) {
+      return reminderTimes.map((time, index) => ({
+        id: String(index + 1),
+        time,
+        repeat: true
+      }));
+    } else {
+      return [
+        { id: '1', time: '09:00', repeat: true },
+        { id: '2', time: '12:00', repeat: true },
+        { id: '3', time: '15:00', repeat: true },
+      ];
+    }
+  });
   const [interval, setIntervalValue] = useState<number>(60);
   const [isAutomatic, setIsAutomatic] = useState<boolean>(false);
 
@@ -60,7 +72,7 @@ const ReminderSettings: React.FC = () => {
   const saveSettings = () => {
     // Convert reminders to notification times
     const notificationTimes = reminders.map((reminder) => reminder.time);
-    setNotificationTimes(notificationTimes);
+    setReminderTimes(notificationTimes);
 
     toast({
       title: 'Settings saved!',

@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 // Types
@@ -44,6 +43,7 @@ interface HydrationState {
   reminderInterval: number;
   remindersEnabled: boolean;
   measurementUnit: 'ml' | 'oz';
+  reminderTimes: string[];
   userProfile: {
     weight: number;
     weightUnit: 'kg' | 'lb';
@@ -59,6 +59,7 @@ interface HydrationContextType extends HydrationState {
   toggleReminders: (enabled: boolean) => void;
   setReminderInterval: (minutes: number) => void;
   setMeasurementUnit: (unit: 'ml' | 'oz') => void;
+  setReminderTimes: (times: string[]) => void;
   updateUserProfile: (profile: Partial<HydrationState['userProfile']>) => void;
   getCurrentDayProgress: () => {
     current: number;
@@ -98,6 +99,7 @@ const defaultState: HydrationState = {
   reminderInterval: 60,
   remindersEnabled: false,
   measurementUnit: 'ml',
+  reminderTimes: ['09:00', '12:00', '15:00'],
   userProfile: {
     weight: 70,
     weightUnit: 'kg',
@@ -124,6 +126,11 @@ export const HydrationProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           current: 0,
           entries: [],
         });
+      }
+      
+      // Ensure reminderTimes exists (for backward compatibility)
+      if (!parsed.reminderTimes) {
+        parsed.reminderTimes = defaultState.reminderTimes;
       }
       
       return parsed;
@@ -235,6 +242,14 @@ export const HydrationProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setState((prev) => ({
       ...prev,
       reminderInterval: minutes,
+    }));
+  };
+
+  // Set reminder times
+  const setReminderTimes = (times: string[]) => {
+    setState((prev) => ({
+      ...prev,
+      reminderTimes: times,
     }));
   };
 
@@ -413,6 +428,7 @@ export const HydrationProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         toggleReminders,
         setReminderInterval,
         setMeasurementUnit,
+        setReminderTimes,
         updateUserProfile,
         getCurrentDayProgress,
         getProgress,
